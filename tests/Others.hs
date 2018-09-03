@@ -1,17 +1,21 @@
-{-# LANGUAGE ScopedTypeVariables, RankNTypes, TypeFamilies, FlexibleContexts, ExistentialQuantification #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE RankNTypes                #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 module Others (tests) where
 
-import Language.KansasLava
-import Language.KansasLava.Signal(mkShallowS)
-import Language.KansasLava.Test
+import           Language.KansasLava
+import           Language.KansasLava.Signal (mkShallowS)
+import           Language.KansasLava.Test
 
 import qualified Language.KansasLava.Stream as S
 
-import Data.Bits
-import Data.Sized.Ix
-import Data.Sized.Sampled
-import Data.Sized.Signed
-import Data.Sized.Unsigned
+import           Data.Bits
+import           Data.Sized.Ix
+import           Data.Sized.Sampled
+import           Data.Sized.Signed
+import           Data.Sized.Unsigned
 
 type List a = [a]
 
@@ -31,12 +35,12 @@ tests test = do
         t1 "Sampled/X128xX16"(finiteCases 100 ::[Sampled X128 X16])
 
         -- Just the Bits Stuff
-        let t2 :: (Ord a, Bits a, Show a, Rep a, Size (W a)) => String -> List a -> IO ()
+        let t2 :: (Ord a, Num a, Bits a, Show a, Rep a, Size (W a)) => String -> List a -> IO ()
             t2 str arb = testOpsBits test str arb
 
 
 	-- tests Bits, inc the shifts
-        let t2' :: (Ord a, Bits a, Show a, Rep a, Size (W a), Integral (W a), Rep (W a), Size (W (W a))) => String -> List a -> IO ()
+        let t2' :: (Ord a, Num a, Bits a, Show a, Rep a, Size (W a), Integral (W a), Rep (W a), Size (W (W a))) => String -> List a -> IO ()
             t2' str arb = testOpsBits2 test str arb
 
         t2' "U1" (allCases :: List U1)
@@ -290,7 +294,7 @@ testOpsFractional test tyName ws = do
 ----------------------------------------------------------------------------------------
 
 testOpsBits :: forall w .
-        (Ord w, Rep w, Show w, Bits w, Size (W w)) => TestSeq -> String -> List w -> IO ()
+        (Ord w, Num w, Rep w, Show w, Bits w, Size (W w)) => TestSeq -> String -> List w -> IO ()
 testOpsBits test tyName ws = do
         testOpsNum test tyName ws
 
@@ -317,7 +321,7 @@ testOpsBits test tyName ws = do
 
 
 testOpsBits2 :: forall w .
-        (Ord w, Rep w, Show w, Bits w, Size (W w), Integral (W w), Rep (W w), Size (W (W w))) => TestSeq -> String -> List w -> IO ()
+        (Ord w, Num w, Rep w, Show w, Bits w, Size (W w), Integral (W w), Rep (W w), Size (W (W w))) => TestSeq -> String -> List w -> IO ()
 testOpsBits2 test tyName ws = do
 	testOpsBits test tyName ws
 

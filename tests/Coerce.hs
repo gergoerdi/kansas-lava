@@ -1,20 +1,24 @@
-{-# LANGUAGE ScopedTypeVariables, RankNTypes, TypeFamilies, FlexibleContexts, ExistentialQuantification #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE RankNTypes                #-}
+{-# LANGUAGE ScopedTypeVariables       #-}
+{-# LANGUAGE TypeFamilies              #-}
 
 module Coerce where
 
-import Language.KansasLava
-import Language.KansasLava.Test
+import           Language.KansasLava
+import           Language.KansasLava.Test
 
-import Data.Sized.Unsigned
-import Data.Sized.Matrix as M hiding (length)
-import Data.Sized.Signed
+import           Data.Sized.Matrix        as M hiding (length)
+import           Data.Sized.Signed
+import           Data.Sized.Unsigned
 
 type List a = [a]
 
 tests :: TestSeq -> IO ()
 tests test = do
 
-        let t1 :: (Bounded w2, Integral w2, Integral w1, Rep w2, Show w2, Rep w1, Size (W w1), Size (W w2)) =>
+        let t1 :: (Bounded w2, Integral w2, Integral w1, Rep w2, Show w2, Rep w1, Show w1, Size (W w1), Size (W w2)) =>
                   String -> Witness w2 -> List w1 -> IO ()
 
             t1 str witness arb = testUnsigned test str witness arb
@@ -59,7 +63,7 @@ tests test = do
         t1 "X5_X4" (Witness :: Witness X5) ((allCases :: List X4))
         t1 "X5_X5" (Witness :: Witness X5) ((allCases :: List X5))
 
-        let t2 :: (Bounded w1, Bounded w2, Integral w2, Integral w1, Show w2, Rep w2, Rep w1, Size (W w1), Size (W w2)) =>
+        let t2 :: (Bounded w1, Bounded w2, Integral w2, Integral w1, Show w2, Rep w2, Rep w1, Show w1, Size (W w1), Size (W w2)) =>
                   String -> Witness w2 -> List w1 -> IO ()
             t2 str witness arb = testSigned test str witness arb
 
@@ -119,7 +123,7 @@ tests test = do
         return ()
 
 
-testUnsigned :: forall w1 w2 . (Num w2, Integral w1, Integral w2, Bounded w2, Eq w1, Rep w1, Eq w2, Show w2, Rep w2, Size (W w1), Size (W w2))
+testUnsigned :: forall w1 w2 . (Num w2, Integral w1, Integral w2, Bounded w2, Eq w1, Show w1, Rep w1, Eq w2, Show w2, Rep w2, Size (W w1), Size (W w2))
             => TestSeq -> String -> Witness w2 -> List w1 -> IO ()
 testUnsigned (TestSeq test _) tyName Witness ws = do
         let ms = ws
@@ -142,7 +146,7 @@ testUnsigned (TestSeq test _) tyName Witness ws = do
         test ("unsigned/" ++ tyName) (length ms) dut (driver >> matchExpected "o0" res)
         return ()
 
-testSigned :: forall w1 w2 . (Num w2, Integral w1, Bounded w1, Integral w2, Bounded w2, Eq w1, Rep w1, Eq w2, Show w2, Rep w2, Size (W w1), Size (W w2))
+testSigned :: forall w1 w2 . (Num w2, Integral w1, Bounded w1, Integral w2, Bounded w2, Eq w1, Show w1, Rep w1, Eq w2, Show w2, Rep w2, Size (W w1), Size (W w2))
             => TestSeq -> String -> Witness w2 -> List w1 -> IO ()
 testSigned (TestSeq test _) tyName Witness ws = do
         let ms = ws
